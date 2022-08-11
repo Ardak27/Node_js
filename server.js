@@ -1,6 +1,7 @@
 var express = require('express');
 var { graphqlHTTP } = require('express-graphql');
 var { buildSchema } = require('graphql');
+
 const fs = require('fs');
 const path = require('path');
 
@@ -17,7 +18,6 @@ var schema = buildSchema(`
     WriteData(name: String, data:String): String
   }
 `);
-
 
 // The root provides a resolver function for each API endpoint
 var root = {
@@ -37,21 +37,14 @@ var root = {
 
     WriteData: (args)=>{
         let message;
-
-        if(files.includes(args.name) ){
-            fs.writeFile('./data/' + args.name, args.data, (err) => {
-                if (err) console.log(err);
-                    })
-                    console.log('Файл успешно перезаписано')
-                    message = 'Файл успешно перезаписано';
+        if(files.includes(args.name)){
+          message = 'Файл успешно перезаписано';
+        }else{
+          message = 'Файл успешно создано и данные записаны';
         }
-        else{
-            fs.writeFile('./data/' + args.name, args.data, (err) => {
-            if (err) console.log(err);
-                })
-                console.log('Файл успешно создано и данные записано')
-                message = 'Файл успешно создано и данные записаны';
-        }
+        fs.writeFile('./data/' + args.name, args.data, (err) => {
+          if (err) console.log(err);
+              })
         return message;
     }
 };
